@@ -1,0 +1,5 @@
+Game: Cannon Battle
+Aesthetic Goals:
+
+11/26/24:
+-Initialized project repo and set up project in unity
