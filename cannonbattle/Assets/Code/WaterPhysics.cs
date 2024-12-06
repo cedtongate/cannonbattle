@@ -7,13 +7,12 @@ public class WaterPhysics : MonoBehaviour
     // Start is called before the first frame update
     private Rigidbody playerBody;
 
-    private float waterDepth = -3.5f;  // The base level of the water (constant)
-    private float displacement = 0f;   // Wave displacement, set to 0 for no waves
+    // private float waterDepth = -3.5f;  // The base level of the water (constant)
 
     private float gravityForce;
     private bool isInWater = false;
 
-    private float buoyancyFactor = 1f; // Adjust this value to tweak buoyancy strength
+    // private float buoyancyFactor = 1f; // Adjust this value to tweak buoyancy strength
 
     void Start()
     {
@@ -44,7 +43,7 @@ public class WaterPhysics : MonoBehaviour
     {
         if (isInWater)
         {
-            ApplyGravityCompensation();
+            // ApplyGravityCompensation();
         }
     }
 
