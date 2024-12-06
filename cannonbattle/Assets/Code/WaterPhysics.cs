@@ -43,7 +43,7 @@ public class WaterPhysics : MonoBehaviour
     {
         if (isInWater)
         {
-            // ApplyGravityCompensation();
+            ApplyGravityCompensation();
         }
     }
 

@@ -24,7 +24,7 @@ public class CameraMovement : MonoBehaviour
             // playerTransform.Rotate(0, horizontalInput, 0);
 
             // Adjust camera position to be behind and above the player, using the offset
-            transform.position = playerTransform.position -  playerTransform.rotation *offset;
+            transform.position = playerTransform.position -  playerTransform.rotation * offset;
 
             // Ensure camera looks at the player
             transform.LookAt(playerTransform);

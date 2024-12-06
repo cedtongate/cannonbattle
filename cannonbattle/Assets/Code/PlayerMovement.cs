@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEditor.Callbacks;
+using UnityEditor.Rendering;
 using UnityEngine;
 
 public class PlayerMovement : MonoBehaviour
@@ -10,7 +11,7 @@ public class PlayerMovement : MonoBehaviour
     private float turnSpeed = 35f;      // Speed at which the boat turns (rotation speed)
 
     public float PitchRange = 45f;
-    public float RollRange = 10f;
+    public float RollRange = 45f;
  
     private float maxSpeed = 2f;
     private float Deceleration = 2f;
@@ -30,7 +31,6 @@ public class PlayerMovement : MonoBehaviour
     private float thrust;
 
     private Rigidbody playerRB;
-    private float gravityForce;
     void Start()
     {
         playerRB = GetComponent<Rigidbody>();    
@@ -52,6 +52,7 @@ public class PlayerMovement : MonoBehaviour
         // playerRB.MoveRotation(rotate);
 
         // Applying thrust to the plane
+        // Deceleration is not working right now!
         float thrustInput = -1f * Input.GetAxis("Vertical");
         if(thrustInput < 0f){
             thrustInput = 0f;
@@ -72,19 +73,26 @@ public class PlayerMovement : MonoBehaviour
         // float moveInput = Input.GetAxis("Vertical");    // Typically, "Vertical" is mapped to the left joystick's vertical axis
         float turnInput = Input.GetAxis("Horizontal");  // Typically, "Horizontal" is mapped to the left joystick's horizontal axis
         
-        // float joystickroll = turnInput*RollRange;
-        // roll = Mathf.Lerp(roll, joystickroll, 0.01f);
+        float joystickroll = turnInput*RollRange;
+        roll = Mathf.Lerp(roll, joystickroll, 0.1f);
         
         // Quaternion currentRotation = playerRB.rotation;
         // Quaternion rollRotation = Quaternion.Euler(0, currentRotation.eulerAngles.y, roll);
 
-        // Quaternion rotate = Quaternion.Euler(0, 0, roll);
+        // Quaternion rotate = Quaternion.Euler(roll, 0, 0);
         // playerRB.MoveRotation(rotate);
+        transform.Rotate(transform.right, roll * Time.deltaTime);
 
         // Move the boat forward/backward based on the vertical input
         // transform.Translate(Vector3.left * moveInput * moveSpeed * Time.deltaTime);
 
         // Rotate the boat left/right based on the horizontal input
         transform.Rotate(transform.up, turnInput * turnSpeed * Time.deltaTime);
+    }
+
+    void OnCollisionEnter(Collision col){
+        if (col.gameObject.CompareTag("Walls")){
+            playerRB.velocity = Vector3.zero;
+        }
     }
 }
