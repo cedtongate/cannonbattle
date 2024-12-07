@@ -8,6 +8,7 @@ using UnityEngine;
 public class PlayerFireSystem : MonoBehaviour
 {
     // Start is called before the first frame update
+    public AudioClip cannonSound;
     public GameObject cannonBallPrefab;
 
     private Transform playerTransform;
@@ -34,6 +35,7 @@ public class PlayerFireSystem : MonoBehaviour
         }
 
         float distStrength = -1f * Input.GetAxis("AimingRightJoystick");
+        // Debug.Log("Stick Position " + distStrength);
         if(distStrength < 0f){
             distStrength = 0f;
             SetForwardForce(distStrength);
@@ -57,6 +59,7 @@ public class PlayerFireSystem : MonoBehaviour
         Vector3 launchDirection = forwardDirection + (Vector3.up * upwardForce);
 
         cb.AddForce(launchDirection * throwForce, ForceMode.Impulse);
+        AudioSource.PlayClipAtPoint(cannonSound, transform.position);
 
         Destroy(cannonBall, 5f);
     }

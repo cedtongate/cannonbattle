@@ -6,12 +6,15 @@ using UnityEngine;
 
 public class PlayerMovement : MonoBehaviour
 {
+    private AudioSource boatAudio;
+
+    private Vector3 lastPosition;
     // Start is called before the first frame update
     public float moveSpeed = 5f;        // Speed at which the boat moves forward/backward
     private float turnSpeed = 35f;      // Speed at which the boat turns (rotation speed)
 
-    public float PitchRange = 45f;
-    public float RollRange = 45f;
+    public float PitchRange = 5f;
+    public float RollRange = 5f;
  
     private float maxSpeed = 2f;
     private float Deceleration = 2f;
@@ -33,25 +36,14 @@ public class PlayerMovement : MonoBehaviour
     private Rigidbody playerRB;
     void Start()
     {
-        playerRB = GetComponent<Rigidbody>();    
+        boatAudio = GetComponent<AudioSource>();
+        playerRB = GetComponent<Rigidbody>();   
+        lastPosition = transform.position;
     }
 
     // Update is called once per frame
     internal void FixedUpdate(){
         
-        // float horizontalInput = Input.GetAxis("Horizontal");
-        
-        
-        // float verticalInput = Input.GetAxis("Vertical");
-        // float joystickpitch = verticalInput*PitchRange;
-        // pitch = Mathf.Lerp(pitch, joystickpitch, 0.01f);
-        // // Yaw Calculation
-        // float joystickyaw = yaw + roll * RotationalSpeed * Time.fixedDeltaTime;
-        // yaw = joystickyaw;
-        // Quaternion rotate = Quaternion.Euler(pitch, yaw, roll);
-        // playerRB.MoveRotation(rotate);
-
-        // Applying thrust to the plane
         // Deceleration is not working right now!
         float thrustInput = -1f * Input.GetAxis("Vertical");
         if(thrustInput < 0f){
@@ -70,24 +62,40 @@ public class PlayerMovement : MonoBehaviour
         if (playerRB.velocity.magnitude > maxSpeed){
             playerRB.velocity = playerRB.velocity.normalized * maxSpeed;
         }
-        // float moveInput = Input.GetAxis("Vertical");    // Typically, "Vertical" is mapped to the left joystick's vertical axis
+
         float turnInput = Input.GetAxis("Horizontal");  // Typically, "Horizontal" is mapped to the left joystick's horizontal axis
-        
-        float joystickroll = turnInput*RollRange;
-        roll = Mathf.Lerp(roll, joystickroll, 0.1f);
-        
-        // Quaternion currentRotation = playerRB.rotation;
-        // Quaternion rollRotation = Quaternion.Euler(0, currentRotation.eulerAngles.y, roll);
-
-        // Quaternion rotate = Quaternion.Euler(roll, 0, 0);
-        // playerRB.MoveRotation(rotate);
-        transform.Rotate(transform.right, roll * Time.deltaTime);
-
-        // Move the boat forward/backward based on the vertical input
-        // transform.Translate(Vector3.left * moveInput * moveSpeed * Time.deltaTime);
-
-        // Rotate the boat left/right based on the horizontal input
+    
+        // // Rotate the boat left/right based on the horizontal input
         transform.Rotate(transform.up, turnInput * turnSpeed * Time.deltaTime);
+
+        if(playerRB.velocity.magnitude > 0f){
+            if(!boatAudio.isPlaying){
+                boatAudio.Play();
+            }
+        }
+        else {
+            if(boatAudio.isPlaying){
+                boatAudio.Stop();
+            }
+        }
+
+        if(transform.position == lastPosition){
+            if(boatAudio.isPlaying){
+                boatAudio.Stop();
+            }
+        }
+        lastPosition = transform.position;
+
+        // float horizontalInput = Input.GetAxis("Horizontal");
+        // float joystickroll = horizontalInput*RollRange;
+        // roll = Mathf.Lerp(roll, joystickroll, 0.01f);
+    
+        // // Yaw Calculation
+        // float joystickyaw = yaw + roll * turnSpeed * Time.fixedDeltaTime;
+        // yaw = joystickyaw;
+        // Quaternion rotate = Quaternion.Euler(roll, yaw, pitch);
+        // playerRB.MoveRotation(rotate);
+
     }
 
     void OnCollisionEnter(Collision col){
