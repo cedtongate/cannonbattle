@@ -4,9 +4,10 @@ using UnityEngine;
 
 public class CannonBallBehaviour : MonoBehaviour
 {
-    // Start is called before the first frame update
-    private Rigidbody cannonBody;
     
+    private Rigidbody cannonBody;
+    public GameObject PlayerCannonBallExplosion;
+ 
     void Start()
     {
         cannonBody = GetComponent<Rigidbody>();
@@ -20,7 +21,22 @@ public class CannonBallBehaviour : MonoBehaviour
         
     }
 
-    private void OnCollisionEnter(Collision collision){
+    void DestroyCannonBall(){
         Destroy(gameObject);
+    }
+
+    private void OnTriggerEnter(Collider col){
+        if(col.gameObject.CompareTag("Enemy")){
+            MeshRenderer cannonBallMesh = GetComponent<MeshRenderer>();
+            cannonBallMesh.enabled = false;
+            Instantiate(PlayerCannonBallExplosion, transform.position, Quaternion.identity, transform.parent);
+            Invoke("DestroyCannonBall", 0.1f);
+        }
+    
+    }
+    private void OnCollisionEnter(Collision col){
+        if(col.gameObject.CompareTag("WaterPlane") || col.gameObject.CompareTag("Walls")){
+            DestroyCannonBall();
+        }
     }
 }

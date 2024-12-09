@@ -4,6 +4,7 @@ using System.Threading;
 using Unity.VisualScripting;
 using UnityEditor.ShaderGraph.Internal;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class PlayerFireSystem : MonoBehaviour
 {
@@ -11,20 +12,22 @@ public class PlayerFireSystem : MonoBehaviour
     public AudioClip cannonSound;
     public GameObject cannonBallPrefab;
 
+    private float maxHealth = 3f;
+    private float currentHealth;
+    public PlayerHealthBarScript playerHealthbar;
     private Transform playerTransform;
-    // private Transform spawnPoint;
     private float maxUpwardForce = 2f;
     private float maxThrowForce = 3f;
 
     private float upwardForce;
     private float throwForce;
-    public KeyCode fireButton;
-
     private GameObject cannonBall;
 
     void Start()
     {
         playerTransform = gameObject.transform;
+        currentHealth = maxHealth;
+        playerHealthbar.updateHealthBar(maxHealth, currentHealth);
     }
 
     // Update is called once per frame
@@ -47,13 +50,10 @@ public class PlayerFireSystem : MonoBehaviour
 
     void FireCannonBall(){
         Vector3 spawnPosition = playerTransform.position + (playerTransform.right * -0.5f) + new Vector3(0, 0.2f, 0);
-        // Vector3 spawnPosition = new Vector3(1, -10, 3);
         Quaternion spawnRotation = playerTransform.rotation;
 
         cannonBall = Instantiate(cannonBallPrefab, spawnPosition, spawnRotation);
         Rigidbody cb = cannonBall.GetComponent<Rigidbody>();
-
-        
 
         Vector3 forwardDirection = -playerTransform.right;
         Vector3 launchDirection = forwardDirection + (Vector3.up * upwardForce);
@@ -61,12 +61,27 @@ public class PlayerFireSystem : MonoBehaviour
         cb.AddForce(launchDirection * throwForce, ForceMode.Impulse);
         AudioSource.PlayClipAtPoint(cannonSound, transform.position);
 
-        Destroy(cannonBall, 5f);
+        Destroy(cannonBall, 3f);
     }
 
     void SetForwardForce(float distStrength){
         
         upwardForce = distStrength * maxUpwardForce;
         throwForce = distStrength * maxThrowForce; 
+    }
+
+    void OnTriggerEnter(Collider col){
+        if(col.gameObject.CompareTag("EnemyCannon")){
+            currentHealth = currentHealth - 1f;
+            playerHealthbar.updateHealthBar(maxHealth, currentHealth);
+            if(currentHealth == 0f){
+                // SceneSwitch();
+                Invoke("SceneSwitch", 1f);
+            }
+        }
+    }
+     public void SceneSwitch()
+    {
+        SceneManager.LoadScene("endLoseMenu");
     }
 }
